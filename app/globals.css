@@ -1,0 +1,120 @@
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ─── THEME TOKENS ─── */
+:root {
+  --green: #2EC97A;
+  --blue: #5B67F0;
+  --yellow: #F5A623;
+
+  /* Dark theme (default) */
+  --bg: #060810;
+  --bg-alt: #07090f;
+  --bg-deep: #040608;
+  --bg-card: #0a0d16;
+  --text: #ffffff;
+  --text-soft: rgba(255,255,255,0.6);
+  --text-mute: rgba(255,255,255,0.4);
+  --text-faint: rgba(255,255,255,0.25);
+  --border: rgba(255,255,255,0.08);
+  --border-soft: rgba(255,255,255,0.05);
+  --glass-bg: rgba(255,255,255,0.04);
+  --glass-bg-light: rgba(255,255,255,0.06);
+  --input-bg: rgba(255,255,255,0.05);
+  --browser-chrome: rgba(255,255,255,0.03);
+  --shadow-color: rgba(0,0,0,0.4);
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --bg: #FAFBFC;
+    --bg-alt: #F4F5F8;
+    --bg-deep: #EFF1F5;
+    --bg-card: #ffffff;
+    --text: #0F1117;
+    --text-soft: rgba(15,17,23,0.65);
+    --text-mute: rgba(15,17,23,0.45);
+    --text-faint: rgba(15,17,23,0.30);
+    --border: rgba(15,17,23,0.10);
+    --border-soft: rgba(15,17,23,0.06);
+    --glass-bg: rgba(255,255,255,0.7);
+    --glass-bg-light: rgba(255,255,255,0.85);
+    --input-bg: rgba(15,17,23,0.04);
+    --browser-chrome: rgba(15,17,23,0.04);
+    --shadow-color: rgba(15,17,23,0.10);
+  }
+}
+
+@layer base {
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    overflow-x: hidden;
+    transition: background 0.3s ease, color 0.3s ease;
+  }
+  ::selection { background: rgba(46,201,122,0.3); color: var(--text); }
+}
+
+@layer utilities {
+  .font-display { font-family: 'Sora', sans-serif; }
+  .text-gradient {
+    background: linear-gradient(135deg, #2EC97A 0%, #5B67F0 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .glass {
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--border);
+  }
+  .glass-light {
+    background: var(--glass-bg-light);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--border);
+  }
+}
+
+/* Animations */
+@keyframes float-a { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)} }
+@keyframes float-b { 0%,100%{transform:translateY(0)} 50%{transform:translateY(8px)} }
+@keyframes fade-up { from{opacity:0;transform:translateY(32px)} to{opacity:1;transform:translateY(0)} }
+@keyframes fade-in { from{opacity:0} to{opacity:1} }
+@keyframes pulse-ring { 0%{transform:scale(1);opacity:0.4} 100%{transform:scale(1.8);opacity:0} }
+@keyframes spin-slow { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+
+.animate-float-a { animation: float-a 4s ease-in-out infinite; }
+.animate-float-b { animation: float-b 5s ease-in-out infinite; }
+.animate-fade-up { animation: fade-up 0.7s cubic-bezier(0.16,1,0.3,1) both; }
+.animate-fade-in { animation: fade-in 0.5s ease both; }
+.animate-pulse-ring { animation: pulse-ring 2s ease-out infinite; }
+.animate-spin-slow { animation: spin-slow 20s linear infinite; }
+.delay-100 { animation-delay: 100ms; }
+.delay-200 { animation-delay: 200ms; }
+.delay-300 { animation-delay: 300ms; }
+.delay-400 { animation-delay: 400ms; }
+.delay-500 { animation-delay: 500ms; }
+
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
+
+.noise::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.4;
+}
+
+@media (prefers-color-scheme: light) {
+  .noise::before { opacity: 0.15; }
+}

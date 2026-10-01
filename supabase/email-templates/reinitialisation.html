@@ -1,0 +1,32 @@
+<!-- Supabase → Authentication → Emails → "Reset Password"
+     Objet : Nouveau mot de passe ChoixPC / New ChoixPC password -->
+<div style="font-family:Arial,Helvetica,sans-serif;background:#F7F8FC;padding:32px 16px;color:#0F1026">
+  <div style="max-width:480px;margin:0 auto;background:#FFFFFF;border-radius:24px;padding:32px;border:1px solid #E8EBF5">
+    <div style="width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,#5B67F0,#2EC97A);margin-bottom:20px"></div>
+    {{ if eq .Data.locale "en" }}
+    <h1 style="font-size:22px;margin:0 0 12px">New password</h1>
+    <p style="font-size:15px;line-height:1.6;color:#4A4B63;margin:0 0 24px">
+      You asked to change your ChoixPC password. Click the button below to choose a new one.
+    </p>
+    <a href="{{ .ConfirmationURL }}" style="display:inline-block;background:#2EC97A;color:#0F1026;text-decoration:none;font-weight:bold;padding:14px 28px;border-radius:999px">
+      Choose a new password
+    </a>
+    <p style="font-size:12px;line-height:1.6;color:#8A8BA3;margin:28px 0 0">
+      Didn't ask for this? Ignore this email, your password stays the same.<br>
+      HevelCare · WhatsApp +229 99 08 02 02
+    </p>
+    {{ else }}
+    <h1 style="font-size:22px;margin:0 0 12px">Nouveau mot de passe</h1>
+    <p style="font-size:15px;line-height:1.6;color:#4A4B63;margin:0 0 24px">
+      Vous avez demandé à changer votre mot de passe ChoixPC. Cliquez sur le bouton ci-dessous pour en choisir un nouveau.
+    </p>
+    <a href="{{ .ConfirmationURL }}" style="display:inline-block;background:#2EC97A;color:#0F1026;text-decoration:none;font-weight:bold;padding:14px 28px;border-radius:999px">
+      Choisir un nouveau mot de passe
+    </a>
+    <p style="font-size:12px;line-height:1.6;color:#8A8BA3;margin:28px 0 0">
+      Vous n'avez rien demandé ? Ignorez cet email, votre mot de passe reste inchangé.<br>
+      HevelCare · WhatsApp +229 99 08 02 02
+    </p>
+    {{ end }}
+  </div>
+</div>

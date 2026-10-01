@@ -11,7 +11,7 @@ import { track } from "@/lib/analytics";
 
 const EMPTY: QuestionnaireData = {
   usages: [], freeText: "", budgetMin: 0, budgetMax: null, budgetLabel: "",
-  hasVendor: null, proposals: [], os: "both",
+  hasVendor: null, proposals: [], os: "both", preferences: [], brand: "",
 };
 
 
@@ -41,7 +41,7 @@ export default function QuestionnairePage() {
   };
 
   const handleNext = async () => {
-    const ctx = { os: data.os ?? "both", budget_min: data.budgetMin, budget_max: data.budgetMax, usages: data.usages.join("|"), has_offers: Boolean(data.hasVendor), locale };
+    const ctx = { os: data.os ?? "both", budget_min: data.budgetMin, budget_max: data.budgetMax, usages: data.usages.join("|"), preferences: (data.preferences ?? []).join("|"), brand: data.brand || "none", has_offers: Boolean(data.hasVendor), locale };
     if (step < 3) { track("questionnaire_step", { step, ...ctx }); setStep(s => s + 1); return; }
     track("analysis_start", { ...ctx, offers_count: data.proposals.length });
     const startedAt = Date.now();
@@ -136,7 +136,7 @@ export default function QuestionnairePage() {
                 style={{ width: `${(step / 3) * 100}%`, background: "var(--gradient)" }} />
             </div>
 
-            {step === 1 && <StepUsage selected={data.usages as UsageCategory[]} freeText={data.freeText} os={data.os ?? "both"} onOsChange={os => update({ os })} onChange={usages => update({ usages })} onFreeTextChange={freeText => update({ freeText })} />}
+            {step === 1 && <StepUsage selected={data.usages as UsageCategory[]} freeText={data.freeText} os={data.os ?? "both"} onOsChange={os => update({ os })} preferences={data.preferences ?? []} onPreferencesChange={preferences => update({ preferences })} brand={data.brand ?? ""} onBrandChange={brand => update({ brand })} onChange={usages => update({ usages })} onFreeTextChange={freeText => update({ freeText })} />}
             {step === 2 && <StepBudget budgetMin={data.budgetMin} budgetMax={data.budgetMax} budgetLabel={data.budgetLabel} onChange={(budgetMin, budgetMax, budgetLabel) => update({ budgetMin, budgetMax, budgetLabel })} />}
             {step === 3 && <StepVendor hasVendor={data.hasVendor} proposals={data.proposals} onHasVendorChange={hasVendor => update({ hasVendor })} onProposalsChange={proposals => update({ proposals })} />}
 

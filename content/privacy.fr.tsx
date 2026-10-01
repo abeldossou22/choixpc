@@ -16,8 +16,8 @@ export const sections: LegalSection[] = [
     id: "donnees", title: "Données collectées",
     body: <>
       <ul>
-        <li><strong>Compte</strong> : prénom, nom (facultatif), adresse email, pays, numéro WhatsApp, mot de passe (stocké sous forme chiffrée, nous n'y avons jamais accès), langue préférée.</li>
-        <li><strong>Questionnaire</strong> : vos usages, votre description libre, votre tranche de budget, les offres d'ordinateurs que vous collez, et la recommandation obtenue.</li>
+        <li><strong>Compte</strong> : prénom, nom (facultatif), adresse email, profil (métier), pays, numéro WhatsApp, mot de passe (stocké sous forme chiffrée, nous n'y avons jamais accès), langue préférée.</li>
+        <li><strong>Questionnaire</strong> : vos usages, le système et les préférences choisis, votre description libre, votre tranche de budget, les offres d'ordinateurs que vous collez, et la recommandation obtenue.</li>
         <li><strong>Consentements</strong> : les documents acceptés, leur version et la date d'acceptation.</li>
         <li><strong>Données techniques</strong> : cookies de connexion nécessaires au maintien de votre session, et vos préférences de thème (clair ou sombre) et de langue.</li>
       </ul>

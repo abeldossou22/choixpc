@@ -1,4 +1,5 @@
 import type { QuestionnaireData, AIAnalysisResult } from "./types";
+import { PREFERENCE_PROMPT, isPreference, isBrand } from "./profile-options";
 
 function buildSystemPrompt(locale: "fr" | "en" = "fr"): string {
   const language = locale === "en"
@@ -38,7 +39,15 @@ function buildUserPrompt(data: QuestionnaireData): string {
       ? "SYSTÈME SOUHAITÉ : Windows uniquement.\n"
       : "SYSTÈME SOUHAITÉ : l'utilisateur veut comparer Windows et Mac.\n";
 
-  let prompt = `${country}${osLine}USAGES : ${usagesList || "Non précisé"}\nDESCRIPTION : "${data.freeText || "Aucune"}"\nBUDGET : ${budget}\n`;
+  const profession = data.profession
+    ? `PROFIL DE L'UTILISATEUR : ${data.profession}\nTiens compte des logiciels et des habitudes de travail typiques de ce profil (par exemple AutoCAD/Revit/SketchUp pour un architecte, Excel et logiciels comptables avec pavé numérique pour un comptable, logiciels bancaires et sécurité pour un banquier), même s'ils ne sont pas cités dans les usages.\n`
+    : "";
+  const prefs = (data.preferences ?? []).filter(isPreference).map(p => PREFERENCE_PROMPT[p]);
+  const prefsLine = prefs.length || isBrand(data.brand)
+    ? `PRÉFÉRENCES : ${[...prefs, isBrand(data.brand) ? `marque préférée ${data.brand}` : ""].filter(Boolean).join(" ; ")}\nRespecte ces préférences autant que le budget le permet. Si l'une d'elles est impossible à satisfaire ou en contradiction avec une autre, dis-le simplement et propose le meilleur compromis.\n`
+    : "";
+
+  let prompt = `${country}${profession}${osLine}${prefsLine}USAGES : ${usagesList || "Non précisé"}\nDESCRIPTION : "${data.freeText || "Aucune"}"\nBUDGET : ${budget}\n`;
 
   if (data.hasVendor && data.proposals.length > 0) {
     data.proposals.forEach(p => { prompt += `\n--- ${p.label} ---\n${p.rawText}\n`; });

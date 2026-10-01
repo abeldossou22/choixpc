@@ -50,10 +50,10 @@ ne créez pas de balise `page_view` en plus, sinon elles seront comptées deux f
 | `page_context` | à chaque page | `locale`, `page_path` |
 | `consent_choice` | choix dans le bandeau | `consent` (granted / denied) |
 | `cta_click` | clic sur un bouton menant à l'inscription | `section` |
-| `sign_up` | compte créé | `method`, `country`, `locale`, `offers_opt_in` |
+| `sign_up` | compte créé | `method`, `country`, `profession`, `locale`, `offers_opt_in` |
 | `sign_up_error` | inscription refusée | — |
 | `login` | connexion réussie | `method` |
-| `questionnaire_step` | étape 1 ou 2 validée | `step`, `os`, `budget_min`, `budget_max`, `usages`, `has_offers`, `locale` |
+| `questionnaire_step` | étape 1 ou 2 validée | `step`, `os`, `budget_min`, `budget_max`, `usages`, `preferences`, `brand`, `has_offers`, `locale` |
 | `analysis_start` | analyse lancée | idem + `offers_count` |
 | `analysis_success` | recommandation affichée | idem + `mode`, `duration_s` |
 | `analysis_error` | analyse en échec | idem + `duration_s` |

@@ -18,6 +18,12 @@ export interface QuestionnaireData {
   proposals: ComputerProposal[];
   /** Système souhaité : Windows, Mac, ou les deux pour comparer. */
   os?: OsPreference;
+  /** Préférences cochées (clés de lib/profile-options). */
+  preferences?: string[];
+  /** Marque préférée, si l'utilisateur en a une. */
+  brand?: string;
+  /** Profil / métier de l'utilisateur (renseigné côté serveur depuis son profil). */
+  profession?: string;
   /** Langue dans laquelle rédiger la recommandation. */
   locale?: "fr" | "en";
   /** Nom du pays de l'utilisateur (renseigné côté serveur depuis son profil). */

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Eye, EyeOff, Check, MailCheck, ChevronDown } from "lucide-react";
 import { countryOptions, dialOf } from "@/lib/countries";
 import { track } from "@/lib/analytics";
+import { PROFESSIONS } from "@/lib/profile-options";
 import AuthShell, { WA_ICON, inputClass, inputStyle } from "@/components/AuthShell";
 import { createClient } from "@/lib/supabase/client";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
@@ -37,6 +38,8 @@ export default function RegisterPage() {
   const [form, setForm] = useState({ prenom: "", nom: "", email: "", whatsapp: "", password: "" });
   const [consents, setConsents] = useState(EMPTY_CONSENTS);
   const [country, setCountry] = useState("");
+  const [profession, setProfession] = useState("");
+  const [professionOther, setProfessionOther] = useState("");
   const [showPwd, setShowPwd] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -58,6 +61,7 @@ export default function RegisterPage() {
       setError(t.errRequired);
       return;
     }
+    if (!profession || (profession === "autre" && !professionOther.trim())) { setError(t.errProfession); return; }
     if (!country) { setError(t.errCountry); return; }
     const digits = form.whatsapp.replace(/\D/g, "");
     if (digits.length < 6 || digits.length > 14) { setError(t.errWhatsapp); return; }
@@ -77,6 +81,8 @@ export default function RegisterPage() {
           nom: form.nom.trim(),
           whatsapp: `+${dial}${digits.replace(/^0+/, "")}`,
           country,
+          profession,
+          profession_other: profession === "autre" ? professionOther.trim() : "",
           locale,
           consent_version: LEGAL_VERSION,
           consents,
@@ -86,7 +92,7 @@ export default function RegisterPage() {
     setLoading(false);
 
     if (err) { track("sign_up_error"); setError(translateError(err.message)); return; }
-    track("sign_up", { method: "email", country, locale, offers_opt_in: consents.offres_whatsapp });
+    track("sign_up", { method: "email", country, profession, locale, offers_opt_in: consents.offres_whatsapp });
     // Si la confirmation d'email est activée dans Supabase, aucune session n'est ouverte tout de suite.
     if (data.session) router.push(p("/questionnaire"));
     else setSentTo(form.email.trim());
@@ -139,6 +145,23 @@ export default function RegisterPage() {
           <label htmlFor="email" className="block text-xs font-semibold mb-2" style={{ color: "var(--fg-mute)" }}>{t.email}</label>
           <input id="email" type="email" name="email" autoComplete="email" value={form.email} onChange={handleChange}
             placeholder={tr.auth.emailPlaceholder} className={inputClass} style={inputStyle} />
+        </div>
+
+        <div>
+          <label htmlFor="profession" className="block text-xs font-semibold mb-2" style={{ color: "var(--fg-mute)" }}>{t.profession}</label>
+          <div className="relative">
+            <select id="profession" value={profession} onChange={e => setProfession(e.target.value)}
+              className={`${inputClass} appearance-none pr-10 cursor-pointer`} style={{ ...inputStyle, color: profession ? "var(--fg)" : "var(--fg-faint)" }}>
+              <option value="" disabled>{t.professionPh}</option>
+              {PROFESSIONS.map(k => <option key={k} value={k}>{tr.professions[k]}</option>)}
+            </select>
+            <ChevronDown size={16} className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none" style={{ color: "var(--fg-faint)" }} />
+          </div>
+          {profession === "autre" && (
+            <input value={professionOther} onChange={e => setProfessionOther(e.target.value)} maxLength={80}
+              placeholder={t.professionOtherPh} aria-label={t.professionOtherPh} className={`${inputClass} mt-2`} style={inputStyle} />
+          )}
+          <p className="text-xs mt-2" style={{ color: "var(--fg-faint)" }}>{t.professionHint}</p>
         </div>
 
         <div>

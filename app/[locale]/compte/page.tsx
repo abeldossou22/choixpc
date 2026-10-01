@@ -11,9 +11,10 @@ import { createClient } from "@/lib/supabase/client";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
 import { LEGAL_VERSION } from "@/lib/legal";
 import { track } from "@/lib/analytics";
+import { PROFESSIONS, isProfession } from "@/lib/profile-options";
 import type { AIAnalysisResult } from "@/lib/types";
 
-type Profile = { prenom: string; nom: string | null; email: string; whatsapp: string; country: string | null };
+type Profile = { prenom: string; nom: string | null; email: string; whatsapp: string; country?: string | null; profession?: string | null; profession_other?: string | null };
 type Analysis = { id: string; created_at: string; budget_label: string | null; usages: string[]; has_vendor: boolean | null; result: AIAnalysisResult | null };
 
 const card = { background: "var(--bg-card)", border: "1px solid var(--border)" };
@@ -82,6 +83,9 @@ function AccountContent() {
   const lp = useLocalePath();
   const locale = useLocale();
   const [country, setCountry] = useState(DEFAULT_COUNTRY);
+  const [profession, setProfession] = useState("");
+  const [professionOther, setProfessionOther] = useState("");
+  const tr = useT();
   const countries = useMemo(() => countryOptions(locale), [locale]);
   const dial = dialOf(country);
   const [loading, setLoading] = useState(true);
@@ -101,20 +105,17 @@ function AccountContent() {
     (async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) { router.replace(`${lp("/login")}?next=${encodeURIComponent(lp("/compte"))}`); return; }
-      let [p, a, c] = await Promise.all([
-        supabase.from("profiles").select("prenom, nom, email, whatsapp, country").eq("id", user.id).single(),
+      const [p, a, c] = await Promise.all([
+        supabase.from("profiles").select("*").eq("id", user.id).single(),
         supabase.from("analyses").select("id, created_at, budget_label, usages, has_vendor, result").order("created_at", { ascending: false }).limit(20),
         supabase.from("consents").select("granted").eq("document", "offres_whatsapp").order("created_at", { ascending: false }).limit(1),
       ]);
-      // Tant que la migration 0004 (colonne "country") n'est pas exécutée, on relit le profil sans elle.
-      if (p.error) {
-        const fallback = await supabase.from("profiles").select("prenom, nom, email, whatsapp").eq("id", user.id).single();
-        p = { ...fallback, data: fallback.data ? { ...fallback.data, country: null } : null } as typeof p;
-      }
       if (p.data) {
         setProfile(p.data);
         const c = isCountry(p.data.country) ? p.data.country : DEFAULT_COUNTRY;
         setCountry(c);
+        if (isProfession(p.data.profession)) setProfession(p.data.profession);
+        setProfessionOther(p.data.profession_other ?? "");
         setForm({ prenom: p.data.prenom, nom: p.data.nom ?? "", whatsapp: p.data.whatsapp.replace(new RegExp(`^\\+${dialOf(c)}`), "").replace(/^\+/, "") });
       }
       setAnalyses((a.data as Analysis[]) ?? []);
@@ -134,9 +135,11 @@ function AccountContent() {
     setSaving(true);
     const supabase = createClient();
     const { data: { user } } = await supabase.auth.getUser();
-    const { error: err } = await supabase.from("profiles")
-      .update({ prenom: form.prenom.trim(), nom: form.nom.trim() || null, whatsapp: `+${dial}${digits.replace(/^0+/, "")}`, country })
-      .eq("id", user!.id);
+    const base = { prenom: form.prenom.trim(), nom: form.nom.trim() || null, whatsapp: `+${dial}${digits.replace(/^0+/, "")}`, country };
+    const prof = { profession: profession || null, profession_other: profession === "autre" ? professionOther.trim().slice(0, 80) || null : null };
+    let { error: err } = await supabase.from("profiles").update({ ...base, ...prof }).eq("id", user!.id);
+    // Colonnes du profil absentes (migration 0005 pas encore exécutée) : on enregistre le reste.
+    if (err) ({ error: err } = await supabase.from("profiles").update(base).eq("id", user!.id));
     setSaving(false);
     if (err) setError(t.errSave);
     else flash(t.okProfile);
@@ -217,6 +220,21 @@ function AccountContent() {
               <label htmlFor="nom" className="block text-xs font-semibold mb-2" style={{ color: "var(--fg-mute)" }}>{t.lastName}</label>
               <input id="nom" value={form.nom} onChange={e => setForm({ ...form, nom: e.target.value })} className={inputClass} style={inputStyle} />
             </div>
+          </div>
+          <div>
+            <label htmlFor="profession" className="block text-xs font-semibold mb-2" style={{ color: "var(--fg-mute)" }}>{t.profession}</label>
+            <div className="relative">
+              <select id="profession" value={profession} onChange={e => setProfession(e.target.value)}
+                className={`${inputClass} appearance-none pr-10 cursor-pointer`} style={{ ...inputStyle, color: profession ? "var(--fg)" : "var(--fg-faint)" }}>
+                <option value="" disabled>{t.professionPh}</option>
+                {PROFESSIONS.map(k => <option key={k} value={k}>{tr.professions[k]}</option>)}
+              </select>
+              <ChevronDown size={16} className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none" style={{ color: "var(--fg-faint)" }} />
+            </div>
+            {profession === "autre" && (
+              <input value={professionOther} onChange={e => setProfessionOther(e.target.value)} maxLength={80}
+                placeholder={t.professionOtherPh} aria-label={t.professionOtherPh} className={`${inputClass} mt-2`} style={inputStyle} />
+            )}
           </div>
           <div>
             <label htmlFor="country" className="block text-xs font-semibold mb-2" style={{ color: "var(--fg-mute)" }}>{t.country}</label>

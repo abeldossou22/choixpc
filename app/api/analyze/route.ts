@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
 import { getDictionary } from "@/lib/i18n";
 import { countryName, isCountry } from "@/lib/countries";
+import { PROFESSION_PROMPT, isProfession, isPreference, isBrand } from "@/lib/profile-options";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -27,14 +28,23 @@ export async function POST(req: NextRequest) {
     }
     // Le pays est lu dans le profil, jamais dans la requête : il oriente les modèles recommandés.
     data.country = undefined;
+    data.profession = undefined;
+    data.preferences = Array.isArray(data.preferences) ? data.preferences.filter(isPreference) : [];
+    data.brand = isBrand(data.brand) ? data.brand : undefined;
     if (supabase && user) {
-      const { data: profile } = await supabase.from("profiles").select("country").eq("id", user.id).single();
+      // select("*") : fonctionne même si une migration récente n'a pas encore été exécutée.
+      const { data: profile } = await supabase.from("profiles").select("*").eq("id", user.id).single();
       if (isCountry(profile?.country)) data.country = countryName(profile.country, "fr");
+      const prof: unknown = profile?.profession;
+      if (isProfession(prof)) {
+        const other = typeof profile?.profession_other === "string" ? profile.profession_other.slice(0, 80) : "";
+        data.profession = prof === "autre" ? (other || undefined) : PROFESSION_PROMPT[prof];
+      }
     }
     const result = await analyzeComputer(data);
 
     if (supabase && user) {
-      const { error } = await supabase.from("analyses").insert({
+      const row = {
         user_id: user.id,
         usages: data.usages,
         free_text: data.freeText || null,
@@ -44,7 +54,10 @@ export async function POST(req: NextRequest) {
         has_vendor: data.hasVendor,
         proposals: data.proposals,
         result,
-      });
+      };
+      let { error } = await supabase.from("analyses").insert({ ...row, os: data.os ?? "both", preferences: data.preferences, brand: data.brand ?? null });
+      // Colonnes absentes (migration 0005 pas encore exécutée) : on enregistre au moins l'essentiel.
+      if (error) ({ error } = await supabase.from("analyses").insert(row));
       // L'utilisateur reçoit son résultat même si l'enregistrement échoue.
       if (error) console.error("[ChoixPC API] Enregistrement de l'analyse :", error.message);
     }

@@ -20,4 +20,7 @@ export function splitLocale(pathname: string): { locale: Locale; path: string } 
   return { locale: defaultLocale, path: pathname };
 }
 
-export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL ?? "https://choixpc.hevelcare.com").replace(/\/$/, "");
+// Adresse publique du site. Priorité : NEXT_PUBLIC_SITE_URL, sinon le domaine de production fourni
+// automatiquement par Vercel, sinon le domaine prévu à terme.
+const vercelUrl = process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : undefined;
+export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || vercelUrl || "https://choixpc.hevelcare.com").replace(/\/$/, "");

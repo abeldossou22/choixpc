@@ -1,6 +1,6 @@
 import { ImageResponse } from "next/og";
 import { getDictionary } from "@/lib/i18n";
-import { isLocale, defaultLocale } from "@/lib/i18n/config";
+import { isLocale, defaultLocale, SITE_URL } from "@/lib/i18n/config";
 
 export const runtime = "edge";
 
@@ -31,7 +31,7 @@ export async function GET(_req: Request, { params }: { params: { locale: string 
         </div>
 
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", fontSize: 26, color: "rgba(255,255,255,0.6)" }}>
-          <div style={{ display: "flex" }}>choixpc.hevelcare.com</div>
+          <div style={{ display: "flex" }}>{SITE_URL.replace(/^https?:\/\//, "")}</div>
           <div style={{ display: "flex", padding: "12px 26px", borderRadius: 999, background: "#2EC97A", color: "#0F1026", fontWeight: 700 }}>HevelCare</div>
         </div>
       </div>

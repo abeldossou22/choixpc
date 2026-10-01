@@ -19,18 +19,6 @@ export async function middleware(request: NextRequest) {
   }
   const { locale, path } = splitLocale(pathname);
 
-  // Première visite sur l'accueil : on propose l'anglais aux navigateurs anglophones.
-  if (pathname === "/" && !request.cookies.has(LOCALE_COOKIE)) {
-    const preferred = request.headers.get("accept-language")?.split(",")[0]?.trim().toLowerCase() ?? "";
-    if (preferred.startsWith("en")) {
-      const url = request.nextUrl.clone();
-      url.pathname = "/en";
-      const res = NextResponse.redirect(url);
-      res.cookies.set(LOCALE_COOKIE, "en", { path: "/", maxAge: 60 * 60 * 24 * 365 });
-      return res;
-    }
-  }
-
   const redirectTo = (target: string, search = "") => {
     const url = request.nextUrl.clone();
     url.pathname = localePath(locale, target);

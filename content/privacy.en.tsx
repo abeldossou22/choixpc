@@ -46,6 +46,7 @@ export const sections: LegalSection[] = [
         <li><strong>Supabase</strong>, our database and authentication host.</li>
         <li><strong>Our automated text analysis provider</strong> (Google, OpenAI or Anthropic depending on how the service is configured) receives the content of your questionnaire — uses, budget and offers — in order to generate the recommendation. Your name, email and phone number are not sent to it.</li>
         <li><strong>Our web host</strong>, to make the site available.</li>
+        <li><strong>Resend</strong>, our email delivery service, which receives your email address to send you messages about your account.</li>
         <li><strong>Google</strong> (Google Analytics and Google Tag Manager), for audience measurement, only if you accepted it.</li>
       </ul>
       <p>These providers act on our instructions and may not use your data for their own purposes.</p>

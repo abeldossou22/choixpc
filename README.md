@@ -21,6 +21,7 @@ npm run dev
 | `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Comptes et base de données |
 | `NEXT_PUBLIC_SITE_URL` | Adresse publique du site (SEO, sitemap) |
 | `NEXT_PUBLIC_GTM_ID` | Conteneur Google Tag Manager (facultatif) |
+| `RESEND_API_KEY`, `SEND_EMAIL_HOOK_SECRET`, `EMAIL_FROM` | Emails de compte avec Resend (voir `docs/emails-resend.md`) |
 
 ## Base de données
 
@@ -32,3 +33,4 @@ Modèles d'emails : `supabase/email-templates/`.
 - Textes : `lib/i18n/fr.ts` et `lib/i18n/en.ts`
 - Textes juridiques : `content/`, informations de la société : `lib/legal.ts`
 - Suivi d'audience : `docs/google-tag-manager.md`
+- Emails : `docs/emails-resend.md`

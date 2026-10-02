@@ -45,6 +45,7 @@ export const sections: LegalSection[] = [
         <li><strong>Supabase</strong>, notre hébergeur de base de données et d'authentification.</li>
         <li><strong>Notre prestataire d'analyse automatisée de texte</strong> (Google, OpenAI ou Anthropic selon la configuration du service) reçoit le contenu de votre questionnaire — usages, budget et offres — afin de générer la recommandation. Votre nom, votre email et votre numéro ne lui sont pas transmis.</li>
         <li><strong>Notre hébergeur web</strong>, pour la mise à disposition du site.</li>
+        <li><strong>Resend</strong>, notre service d'envoi d'emails, qui reçoit votre adresse email pour vous envoyer les messages liés à votre compte.</li>
         <li><strong>Google</strong> (Google Analytics et Google Tag Manager), pour la mesure d'audience, uniquement si vous l'avez acceptée.</li>
       </ul>
       <p>Ces prestataires agissent selon nos instructions et ne peuvent pas utiliser vos données pour leur propre compte.</p>

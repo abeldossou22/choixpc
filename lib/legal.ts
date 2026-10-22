@@ -1,8 +1,8 @@
 // Version des documents juridiques : à changer à chaque modification des CGU ou de la politique.
 // Elle est enregistrée avec chaque consentement dans Supabase.
-export const LEGAL_VERSION = "2026-10-01";
-export const LEGAL_UPDATED_AT = "1er octobre 2026";
-export const LEGAL_UPDATED = { fr: "1er octobre 2026", en: "1 October 2026" } as const;
+export const LEGAL_VERSION = "2026-10-22";
+export const LEGAL_UPDATED_AT = "22 octobre 2026";
+export const LEGAL_UPDATED = { fr: "22 octobre 2026", en: "22 October 2026" } as const;
 
 // ⚠️ Informations à compléter par HevelCare avant la mise en ligne.
 export const COMPANY = {

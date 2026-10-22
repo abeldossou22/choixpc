@@ -42,6 +42,7 @@ export const sections: LegalSection[] = [
     body: <>
       <ul>
         <li><strong>L'équipe HevelCare</strong>, pour le suivi de votre demande.</li>
+        <li><strong>hevelstore</strong> (société MIK HEVEL, notre partenaire de vente de matériel informatique au Bénin) reçoit, une fois votre adresse email confirmée, votre nom, votre email, votre numéro WhatsApp, votre pays, votre profil et votre choix concernant les offres WhatsApp, afin de vous proposer des ordinateurs disponibles et de suivre vos demandes d'achat. Vous ne recevez de sa part des offres par WhatsApp que si vous les avez acceptées.</li>
         <li><strong>Supabase</strong>, notre hébergeur de base de données et d'authentification.</li>
         <li><strong>Notre prestataire d'analyse automatisée de texte</strong> (Google, OpenAI ou Anthropic selon la configuration du service) reçoit le contenu de votre questionnaire — usages, budget et offres — afin de générer la recommandation. Votre nom, votre email et votre numéro ne lui sont pas transmis.</li>
         <li><strong>Notre hébergeur web</strong>, pour la mise à disposition du site.</li>

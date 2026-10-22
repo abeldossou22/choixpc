@@ -43,6 +43,7 @@ export const sections: LegalSection[] = [
     body: <>
       <ul>
         <li><strong>The HevelCare team</strong>, to follow up on your request.</li>
+        <li><strong>hevelstore</strong> (MIK HEVEL, our partner selling computer equipment in Benin) receives, once your email address is confirmed, your name, email, WhatsApp number, country, profile and your choice about WhatsApp offers, in order to offer you available computers and follow up on your purchase requests. You only receive WhatsApp offers from it if you accepted them.</li>
         <li><strong>Supabase</strong>, our database and authentication host.</li>
         <li><strong>Our automated text analysis provider</strong> (Google, OpenAI or Anthropic depending on how the service is configured) receives the content of your questionnaire — uses, budget and offers — in order to generate the recommendation. Your name, email and phone number are not sent to it.</li>
         <li><strong>Our web host</strong>, to make the site available.</li>

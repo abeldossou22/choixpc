@@ -1,3 +1,4 @@
+import { WHATSAPP } from "../legal";
 import type { Dictionary } from "./fr";
 
 const en: Dictionary = {
@@ -25,7 +26,7 @@ const en: Dictionary = {
     login: "Log in",
     startFree: "Get started free",
     myAccount: "My account",
-    whatsappDirect: "Message us directly — +229 99 08 02 02",
+    whatsappDirect: `Message us directly — ${WHATSAPP.display}`,
     menu: "Menu",
     themeToLight: "Switch to light theme",
     themeToDark: "Switch to dark theme",
@@ -124,7 +125,7 @@ const en: Dictionary = {
     ],
     humanTitle: "Prefer to talk to a person?",
     humanSub: "Our HevelCare team helps you directly on WhatsApp.",
-    humanCta: "Message +229 99 08 02 02",
+    humanCta: `Message ${WHATSAPP.display}`,
   },
   shoda: {
     label: "After you buy",

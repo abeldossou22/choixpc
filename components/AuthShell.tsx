@@ -1,5 +1,6 @@
 "use client";
 import { Link, useT } from "./I18nProvider";
+import { WHATSAPP } from "@/lib/legal";
 import LanguageSwitch from "./LanguageSwitch";
 import { ArrowLeft } from "lucide-react";
 import Logo from "./Logo";
@@ -37,7 +38,7 @@ export default function AuthShell({ children, footer }: { children: React.ReactN
           </div>
           {footer}
           <div className="text-center mt-4">
-            <a href="https://wa.me/22999080202" target="_blank" rel="noopener noreferrer"
+            <a href={WHATSAPP.url} target="_blank" rel="noopener noreferrer"
               className="inline-flex items-center gap-2 text-sm font-medium hover:underline" style={{ color: "#25D366" }}>
               {WA_ICON}
               {t.common.whatsappDirect}

@@ -1,4 +1,5 @@
 import { createHmac, timingSafeEqual } from "crypto";
+import { WHATSAPP } from "./legal";
 
 // Envoi des emails de compte (confirmation, mot de passe oublié…) avec Resend.
 // Supabase appelle /api/auth/send-email (« Send Email Hook ») ; ce fichier vérifie l'appel et rédige l'email.
@@ -98,11 +99,11 @@ export function buildAuthEmail(action: EmailAction, locale: EmailLocale, link: s
     <p style="font-size:15px;line-height:1.6;color:#4A4B63;margin:0 0 24px">${c.text}</p>
     <a href="${safeLink}" style="display:inline-block;background:#2EC97A;color:#0F1026;text-decoration:none;font-weight:bold;padding:14px 28px;border-radius:999px">${c.button}</a>
     <p style="font-size:12px;line-height:1.6;color:#8A8BA3;margin:24px 0 0">${fallback}<br><a href="${safeLink}" style="color:#5B67F0;word-break:break-all">${safeLink}</a></p>
-    <p style="font-size:12px;line-height:1.6;color:#8A8BA3;margin:20px 0 0">${c.ignore}<br>HevelCare · WhatsApp +229 99 08 02 02</p>
+    <p style="font-size:12px;line-height:1.6;color:#8A8BA3;margin:20px 0 0">${c.ignore}<br>HevelCare · WhatsApp ${WHATSAPP.display}</p>
   </div>
 </div></body></html>`;
 
-  const text = `${c.title}\n\n${hello ? hello + "\n" : ""}${c.text}\n\n${c.button} : ${link}\n\n${c.ignore}\nHevelCare · WhatsApp +229 99 08 02 02`;
+  const text = `${c.title}\n\n${hello ? hello + "\n" : ""}${c.text}\n\n${c.button} : ${link}\n\n${c.ignore}\nHevelCare · WhatsApp ${WHATSAPP.display}`;
   return { subject: c.subject, html, text };
 }
 

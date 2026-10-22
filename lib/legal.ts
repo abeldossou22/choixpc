@@ -1,3 +1,11 @@
+// Numéro WhatsApp de HevelCare : à changer ici seulement (les modèles d'emails de
+// supabase/email-templates/ sont à mettre à jour à la main dans Supabase).
+export const WHATSAPP = {
+  display: "+229 01 29 25 58 58",
+  e164: "+2290129255858",
+  url: "https://wa.me/2290129255858",
+} as const;
+
 // Version des documents juridiques : à changer à chaque modification des CGU ou de la politique.
 // Elle est enregistrée avec chaque consentement dans Supabase.
 export const LEGAL_VERSION = "2026-10-22";
@@ -13,7 +21,7 @@ export const COMPANY = {
   address: "[adresse du siège à compléter], Cotonou, Bénin",
   email: "[email de contact à compléter]",
   privacyEmail: "[email dédié aux données personnelles à compléter]",
-  whatsapp: "+229 99 08 02 02",
+  whatsapp: WHATSAPP.display,
   website: "hevelcare.com",
   director: "[nom du responsable de la publication à compléter]",
 };

@@ -1,3 +1,4 @@
+import { WHATSAPP } from "../legal";
 // Tous les textes du site en français. La version anglaise (en.ts) suit exactement la même structure.
 const fr = {
   meta: {
@@ -24,7 +25,7 @@ const fr = {
     login: "Se connecter",
     startFree: "Commencer gratuitement",
     myAccount: "Mon compte",
-    whatsappDirect: "Nous écrire directement — +229 99 08 02 02",
+    whatsappDirect: `Nous écrire directement — ${WHATSAPP.display}`,
     menu: "Menu",
     themeToLight: "Passer en thème clair",
     themeToDark: "Passer en thème sombre",
@@ -123,7 +124,7 @@ const fr = {
     ],
     humanTitle: "Vous préférez un conseiller humain ?",
     humanSub: "Notre équipe HevelCare vous aide directement sur WhatsApp.",
-    humanCta: "Écrire au +229 99 08 02 02",
+    humanCta: `Écrire au ${WHATSAPP.display}`,
   },
   shoda: {
     label: "Après l'achat",

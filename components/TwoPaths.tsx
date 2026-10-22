@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { Link, useT } from "./I18nProvider";
+import { WHATSAPP } from "@/lib/legal";
 import { ArrowRight, Store, Sparkles } from "lucide-react";
 import Reveal from "./Reveal";
 import { PHOTOS, unsplash } from "@/lib/photos";
@@ -108,7 +109,7 @@ export default function TwoPaths() {
               <p className="text-sm" style={{ color: "var(--fg-mute)" }}>{t.humanSub}</p>
             </div>
           </div>
-          <a href="https://wa.me/22999080202" target="_blank" rel="noopener noreferrer"
+          <a href={WHATSAPP.url} target="_blank" rel="noopener noreferrer"
             className="flex-shrink-0 inline-flex items-center gap-2.5 px-6 py-3 text-sm font-semibold rounded-full btn-ghost">
             <span className="text-[#25D366]">{WA_SVG}</span> {t.humanCta}
           </a>

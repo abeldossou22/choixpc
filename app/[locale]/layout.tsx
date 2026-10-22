@@ -7,6 +7,7 @@ import { I18nProvider } from "@/components/I18nProvider";
 import Analytics from "@/components/Analytics";
 import { CONSENT_BOOTSTRAP, GTM_ID } from "@/lib/analytics";
 import { getDictionary } from "@/lib/i18n";
+import { WHATSAPP } from "@/lib/legal";
 import { isLocale, locales, localePath, SITE_URL, type Locale } from "@/lib/i18n/config";
 
 const creato = localFont({
@@ -101,7 +102,7 @@ export default function RootLayout({ children, params }: Props & { children: Rea
         name: "HevelCare",
         url: "https://hevelcare.com",
         logo: `${SITE_URL}/icon-512.png`,
-        contactPoint: { "@type": "ContactPoint", telephone: "+22999080202", contactType: "customer support", availableLanguage: ["French", "English"] },
+        contactPoint: { "@type": "ContactPoint", telephone: WHATSAPP.e164, contactType: "customer support", availableLanguage: ["French", "English"] },
       },
       {
         "@type": "WebSite",

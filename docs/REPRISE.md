@@ -1,12 +1,23 @@
-# Reprise du projet — état au 12 octobre 2026
+# Reprise du projet — état au 26 octobre 2026
 
 ## Installer le projet sur un nouvel ordinateur
 
+Sur Windows, dans PowerShell, une commande à la fois (sur Mac : `cp` au lieu de `Copy-Item`) :
+
 ```bash
-git clone https://github.com/abeldossou22/choixpc.git
+git clone https://github.com/abeldossou22/choixpc.git choixpc
+```
+
+```bash
 cd choixpc
+```
+
+```bash
 npm install
-cp .env.example .env.local
+```
+
+```powershell
+Copy-Item .env.example .env.local
 ```
 
 Remplir ensuite `.env.local` (ce fichier n'est jamais envoyé sur GitHub) :
@@ -36,15 +47,26 @@ Puis `npm run dev` et ouvrir http://localhost:3000.
 - Google Tag Manager avec bandeau de consentement ; 16 événements envoyés.
 - Envoi des emails de compte avec Resend (code prêt).
 - En ligne sur Vercel : https://choixpc.vercel.app
+- **Liaison avec hevelerp** (22-24 octobre) : à la confirmation de son email, chaque inscrit part vers
+  hevelerp → Clients comme prospect, origine « ChoixPC » (migrations 0006 et 0007, extension pg_net ;
+  la clé se crée dans hevelerp → Mon entreprise → Sites partenaires et s'enregistre dans
+  `private.hevelerp_link`). Testé en vrai : réponse 200.
+- Migrations 0001 à 0007 exécutées dans Supabase (0004 et 0005 rattrapées le 24 octobre).
+- Numéro WhatsApp : +229 01 29 25 58 58, défini une seule fois dans `lib/legal.ts`.
+- Politique de confidentialité : mention du partage avec hevelstore (version du 22 octobre 2026).
 
 ## Ce qui reste à faire
 
 ### Par Abel (dans ses comptes)
 
-- [ ] **Supabase** : exécuter `supabase/migrations/0005_profile_preferences.sql` si ce n'est pas fait.
+- [ ] **⚠️ Inscriptions bloquées (erreur 500)** tant que Resend n'a pas de domaine vérifié : Resend refuse
+      d'écrire à une autre adresse que celle de son compte. Vérifier `hevelcare.com` dans Resend, puis
+      `EMAIL_FROM = ChoixPC <noreply@hevelcare.com>` dans Vercel et redéployer. Dépannage immédiat :
+      désactiver le « Send Email hook » (Supabase → Authentication → Hooks).
+- [ ] **Supabase → Authentication → Emails** : recoller les modèles de `supabase/email-templates/` (nouveau numéro).
+- [ ] **Anciens inscrits** : les prévenir du partage avec hevelstore, puis les envoyer à hevelerp
+      (`select private.send_to_hevelerp(id) from auth.users where email_confirmed_at is not null;`).
 - [ ] **Supabase → URL Configuration** : Site URL `https://choixpc.vercel.app` + Redirect URL `https://choixpc.vercel.app/auth/callback`.
-- [ ] **Emails** : aucun email n'arrive aux utilisateurs tant que Resend n'est pas branché avec un domaine vérifié.
-      Suivre `docs/emails-resend.md`. Il faut un vrai nom de domaine (une adresse `vercel.app` ne peut pas être vérifiée).
 - [ ] **Google Analytics** : créer la propriété GA4, puis les deux balises dans GTM et publier
       (`docs/google-tag-manager.md`). Au dernier contrôle, le conteneur publié était vide.
 - [ ] **Nom de domaine** : une fois ajouté dans Vercel, mettre à jour Supabase, Resend, Analytics et Search Console.

@@ -110,27 +110,31 @@ const GEMINI_MODELS = [process.env.GEMINI_MODEL || "gemini-flash-latest", "gemin
 const isOverloaded = (msg: string) => /503|429|500|overloaded|high demand|unavailable|resource.?exhausted|rate limit|timed? ?out|timeout|aborted|fetch failed/i.test(msg);
 // Délai maximum par tentative : au-delà, on passe au modèle suivant au lieu de laisser l'utilisateur attendre.
 const ATTEMPT_TIMEOUT_MS = 20_000;
-const TOTAL_BUDGET_MS = 50_000;
+// Durée maximale de toute l'analyse, tentatives comprises. Vercel coupe la requête à 60 s avec une page
+// d'erreur : on s'arrête avant pour afficher un vrai message (la lecture de la boutique prend jusqu'à 5 s).
+const TOTAL_BUDGET_MS = 48_000;
+// En dessous, une nouvelle tentative n'a aucune chance d'aboutir.
+const MIN_ATTEMPT_MS = 5_000;
 
 /** Le fournisseur est saturé : l'utilisateur peut réessayer dans un instant. */
 export class AnalysisBusyError extends Error {}
 
-async function analyzeWithGemini(data: QuestionnaireData): Promise<AIAnalysisResult> {
+async function analyzeWithGemini(data: QuestionnaireData, deadline: number): Promise<AIAnalysisResult> {
   const { GoogleGenerativeAI } = await import("@google/generative-ai");
   const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
   const models = GEMINI_MODELS.filter((m, i, all) => all.indexOf(m) === i);
   let lastError = "";
-  const started = Date.now();
 
   for (let round = 0; round < 2; round++) {
     for (const name of models) {
-      if (Date.now() - started > TOTAL_BUDGET_MS) throw new AnalysisBusyError(lastError.slice(0, 200));
+      const remaining = deadline - Date.now();
+      if (remaining < MIN_ATTEMPT_MS) throw new AnalysisBusyError(lastError.slice(0, 200));
       try {
         const model = genAI.getGenerativeModel({
           model: name,
           systemInstruction: buildSystemPrompt(data.locale),
           generationConfig: { responseMimeType: "application/json" },
-        }, { timeout: ATTEMPT_TIMEOUT_MS });
+        }, { timeout: Math.min(ATTEMPT_TIMEOUT_MS, remaining) });
         const result = await model.generateContent(buildUserPrompt(data));
         return parseResult(result.response.text());
       } catch (err) {
@@ -145,34 +149,31 @@ async function analyzeWithGemini(data: QuestionnaireData): Promise<AIAnalysisRes
   throw new AnalysisBusyError(lastError.slice(0, 200));
 }
 
-async function analyzeWithClaude(data: QuestionnaireData): Promise<AIAnalysisResult> {
+async function analyzeWithClaude(data: QuestionnaireData, deadline: number): Promise<AIAnalysisResult> {
   const Anthropic = (await import("@anthropic-ai/sdk")).default;
   const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! });
   const message = await client.messages.create({
     model: process.env.ANTHROPIC_MODEL || "claude-sonnet-5-5", max_tokens: 2000,
     system: buildSystemPrompt(data.locale),
     messages: [{ role: "user", content: buildUserPrompt(data) }],
-  });
+  }, { timeout: Math.max(deadline - Date.now(), MIN_ATTEMPT_MS), maxRetries: 0 });
   const text = message.content.filter(b => b.type === "text").map(b => (b as { type: "text"; text: string }).text).join("");
   return parseResult(text);
 }
 
-async function analyzeWithOpenAI(data: QuestionnaireData): Promise<AIAnalysisResult> {
+async function analyzeWithOpenAI(data: QuestionnaireData, deadline: number): Promise<AIAnalysisResult> {
   const OpenAI = (await import("openai")).default;
   const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY! });
   const completion = await client.chat.completions.create({
     model: process.env.OPENAI_MODEL || "gpt-4o", max_tokens: 2000,
     response_format: { type: "json_object" },
     messages: [{ role: "system", content: buildSystemPrompt(data.locale) }, { role: "user", content: buildUserPrompt(data) }],
-  });
+  }, { timeout: Math.max(deadline - Date.now(), MIN_ATTEMPT_MS), maxRetries: 0 });
   return parseResult(completion.choices[0]?.message?.content ?? "{}");
 }
 
 /** Erreur de configuration (clé absente ou refusée) : à corriger dans .env.local, pas par l'utilisateur. */
 export class AnalysisConfigError extends Error {}
-
-// Au-delà, une seconde analyse dépasserait la durée maximale d'une requête sur Vercel (60 s).
-const GPU_RETRY_LIMIT_MS = 25_000;
 
 const KEY_ENV = { gemini: "GEMINI_API_KEY", anthropic: "ANTHROPIC_API_KEY", openai: "OPENAI_API_KEY" } as const;
 
@@ -182,13 +183,13 @@ export async function analyzeComputer(data: QuestionnaireData): Promise<AIAnalys
   if (!process.env[KEY_ENV[provider]]) {
     throw new AnalysisConfigError(`${KEY_ENV[provider]} est vide dans .env.local (AI_PROVIDER=${provider}).`);
   }
-  const started = Date.now();
+  const deadline = Date.now() + TOTAL_BUDGET_MS;
   try {
-    let result = normalize(await run(provider, data), data);
+    let result = normalize(await run(provider, data, deadline), data);
     // Jeux : toutes les propositions ont été écartées faute de carte dédiée. On redemande une fois si le temps le permet.
     if (result.mode === "generated" && !result.generatedConfigs?.length && needsDedicatedGpu(data)) {
-      if (Date.now() - started > GPU_RETRY_LIMIT_MS) throw new AnalysisBusyError("Aucune proposition avec carte dédiée.");
-      result = normalize(await run(provider, { ...data, gpuRetry: true }), data);
+      if (deadline - Date.now() < ATTEMPT_TIMEOUT_MS) throw new AnalysisBusyError("Aucune proposition avec carte dédiée.");
+      result = normalize(await run(provider, { ...data, gpuRetry: true }, deadline), data);
       if (!result.generatedConfigs?.length) throw new AnalysisBusyError("Aucune proposition avec carte dédiée après la seconde tentative.");
     }
     return { ...result, storeItems: pickStoreItems(result.storeItems, data.catalog ?? []) };
@@ -223,8 +224,8 @@ function normalize(result: AIAnalysisResult, data: QuestionnaireData): AIAnalysi
   return { ...result, generatedConfigs: configs, generatedConfig: configs[0] };
 }
 
-async function run(provider: "gemini" | "anthropic" | "openai", data: QuestionnaireData): Promise<AIAnalysisResult> {
-  if (provider === "openai") return analyzeWithOpenAI(data);
-  if (provider === "anthropic") return analyzeWithClaude(data);
-  return analyzeWithGemini(data);
+async function run(provider: "gemini" | "anthropic" | "openai", data: QuestionnaireData, deadline: number): Promise<AIAnalysisResult> {
+  if (provider === "openai") return analyzeWithOpenAI(data, deadline);
+  if (provider === "anthropic") return analyzeWithClaude(data, deadline);
+  return analyzeWithGemini(data, deadline);
 }

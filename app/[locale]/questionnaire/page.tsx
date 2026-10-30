@@ -54,8 +54,9 @@ export default function QuestionnairePage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...data, locale }),
       });
-      if (!res.ok) throw new Error((await res.json()).error ?? tr.common.genericError);
-      const json = await res.json();
+      // Une coupure de l'hébergeur renvoie une page d'erreur, pas du JSON.
+      const json = await res.json().catch(() => null);
+      if (!res.ok || !json) throw new Error(json?.error ?? tr.api.unavailable);
       track("analysis_success", { ...ctx, mode: json.mode, duration_s: Math.round((Date.now() - startedAt) / 1000) });
       setResult(json);
       setStep(4);

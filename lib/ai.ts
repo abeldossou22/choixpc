@@ -1,6 +1,7 @@
 import type { QuestionnaireData, AIAnalysisResult } from "./types";
 import { PREFERENCE_PROMPT, isPreference, isBrand } from "./profile-options";
 import { getDictionary } from "./i18n";
+import { pickStoreItems } from "./hevelstore";
 
 /** Les jeux exigent une carte graphique dédiée : c'est une règle ferme, pas une simple préférence. */
 const needsDedicatedGpu = (data: QuestionnaireData) => data.usages.includes("jeux");
@@ -84,6 +85,10 @@ Si un usage est mal adapté à un système (par exemple beaucoup de jeux vidéo 
 ${gaming ? `Si le budget ne permet pas un ordinateur avec carte dédiée, même d'occasion, mets "withinBudget": false, propose quand même le moins cher qui en a une, avec son prix réel dans "estimatedPrice", et explique le budget à prévoir.\n` : ""}Dans "summary", dis en une ou deux phrases laquelle des propositions convient le mieux à cet utilisateur et pourquoi.
 Réponds avec ce JSON :
 {"mode":"generated","summary":"string","generatedConfigs":[${item}],"generalAdvice":"string","redFlags":[]}`;
+  }
+  if (data.catalog?.length) {
+    const lines = data.catalog.map((p, i) => `${i + 1}. ${p.title} (${p.category}) — ${p.price} FCFA`).join("\n");
+    prompt += `\n\nBOUTIQUE : voici les équipements disponibles.\n${lines}\nAjoute au JSON la clé "storeItems" : [{"ref":1,"reason":""}]. Choisis au maximum 3 équipements de cette liste réellement utiles à cet utilisateur et à son ordinateur (sac ou sacoche pour le transport, souris, etc.). "ref" est le numéro de l'article dans la liste et "reason" explique en une phrase courte pourquoi il lui sera utile. N'invente jamais d'article. Si rien ne convient, mets un tableau vide. Quand tu parles d'un équipement dans "generalAdvice", reste général : ne cite ni marque ni prix.`;
   }
   return prompt;
 }
@@ -186,7 +191,7 @@ export async function analyzeComputer(data: QuestionnaireData): Promise<AIAnalys
       result = normalize(await run(provider, { ...data, gpuRetry: true }), data);
       if (!result.generatedConfigs?.length) throw new AnalysisBusyError("Aucune proposition avec carte dédiée après la seconde tentative.");
     }
-    return result;
+    return { ...result, storeItems: pickStoreItems(result.storeItems, data.catalog ?? []) };
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
     if (/api key|api_key|authentication|unauthorized|401|403|permission/i.test(msg)) {

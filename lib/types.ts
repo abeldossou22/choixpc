@@ -8,6 +8,25 @@ export interface ComputerProposal {
   rawText: string;
 }
 
+/** Article de la boutique hevelstore. */
+export interface StoreProduct {
+  title: string;
+  slug: string;
+  category: string;
+  /** Prix actuel en FCFA. */
+  price: number;
+  image?: string;
+}
+
+/** Article proposé à l'utilisateur dans ses résultats. */
+export interface StoreItem {
+  title: string;
+  price: number;
+  image?: string;
+  url: string;
+  reason: string;
+}
+
 export interface QuestionnaireData {
   usages: UsageCategory[];
   freeText: string;
@@ -24,6 +43,8 @@ export interface QuestionnaireData {
   brand?: string;
   /** Profil / métier de l'utilisateur (renseigné côté serveur depuis son profil). */
   profession?: string;
+  /** Articles de la boutique parmi lesquels choisir (renseigné côté serveur). */
+  catalog?: StoreProduct[];
   /** Seconde tentative : la première réponse proposait un ordinateur sans carte dédiée pour les jeux. */
   gpuRetry?: boolean;
   /** Langue dans laquelle rédiger la recommandation. */
@@ -73,4 +94,6 @@ export interface AIAnalysisResult {
   generatedConfigs?: GeneratedConfig[];
   generalAdvice: string;
   redFlags?: string[];
+  /** Équipements de la boutique hevelstore conseillés à l'utilisateur. */
+  storeItems?: StoreItem[];
 }

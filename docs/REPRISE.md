@@ -60,7 +60,7 @@ Puis `npm run dev` et ouvrir http://localhost:3000.
 ### Par Abel (dans ses comptes)
 
 - [ ] **Migration 0008** : exécuter `supabase/migrations/0008_feedbacks.sql` dans Supabase (avis après les résultats).
-- [ ] **GTM** : ajouter `feedback_submit` à l'expression du déclencheur (`docs/google-tag-manager.md`), puis publier.
+- [ ] **GTM** : ajouter `feedback_submit` et `store_click` à l'expression du déclencheur (`docs/google-tag-manager.md`), puis publier.
 - [ ] **Supabase → Authentication → Emails** : recoller les modèles de `supabase/email-templates/` (nouveau numéro).
 - [ ] **Anciens inscrits** : les prévenir du partage avec hevelstore, puis les envoyer à hevelerp
       (`select private.send_to_hevelerp(id) from auth.users where email_confirmed_at is not null;`).

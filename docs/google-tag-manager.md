@@ -34,7 +34,7 @@ Les balises Google (GA4) respectent alors automatiquement ce choix, sans réglag
    - Déclencheur : **Événement personnalisé**, nom = l'expression ci-dessous, case « Utiliser la correspondance d'expression régulière » cochée :
 
    ```
-   ^(sign_up|sign_up_error|login|questionnaire_step|analysis_start|analysis_success|analysis_error|analysis_restart|pdf_download|whatsapp_click|shoda_click|cta_click|language_switch|account_deleted|feedback_submit)$
+   ^(sign_up|sign_up_error|login|questionnaire_step|analysis_start|analysis_success|analysis_error|analysis_restart|pdf_download|whatsapp_click|shoda_click|cta_click|language_switch|account_deleted|feedback_submit|store_click)$
    ```
 3. Pour récupérer les paramètres (étape, système, budget…), créez une **variable de couche de données** par paramètre
    utile (ex. `step`, `os`, `mode`, `section`) et ajoutez-les dans « Paramètres d'événement » de la balise.
@@ -64,6 +64,7 @@ ne créez pas de balise `page_view` en plus, sinon elles seront comptées deux f
 | `language_switch` | changement de langue | `to` |
 | `account_deleted` | compte supprimé | — |
 | `feedback_submit` | avis envoyé après les résultats | `rating`, `has_comment` |
+| `store_click` | clic sur un article hevelstore | `section` |
 
 `usages` est une liste séparée par `|` (ex. `etudes|bureautique`). `os` vaut `windows`, `mac` ou `both`.
 

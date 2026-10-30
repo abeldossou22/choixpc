@@ -25,6 +25,7 @@ Dépôt : https://github.com/abeldossou22/choixpc — chaque push sur `main` red
 - Pages sous `app/[locale]/` ; `middleware.ts` gère la langue et les pages protégées.
 - Comptes et données : Supabase (`lib/supabase/`, migrations dans `supabase/migrations/`, à exécuter dans l'ordre).
 - Moteur d'analyse : `lib/ai.ts` (Gemini par défaut, modèles de secours, délais maximum).
+- Équipements conseillés : `lib/hevelstore.ts` lit le catalogue de https://hevel-store.vercel.app (faute d'API publique, cache 1 h).
 - Emails de compte : Resend via `app/api/auth/send-email` (voir `docs/emails-resend.md`).
 - Suivi : Google Tag Manager, `lib/analytics.ts` (voir `docs/google-tag-manager.md`). Aucune donnée personnelle dans les événements.
 - Tester sans compte : `NEXT_DIST_DIR=.next-test NEXT_PUBLIC_SUPABASE_URL="" NEXT_PUBLIC_SUPABASE_ANON_KEY="" npx next dev -p 3100`

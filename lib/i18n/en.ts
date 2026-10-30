@@ -331,6 +331,12 @@ const en: Dictionary = {
       tip: "Run SHODA within 24 hours of buying.",
       pdf: "Download as PDF",
       restart: "Start again",
+      store: {
+        title: "To go with your computer",
+        subtitle: "Equipment picked for you, available on hevelstore.",
+        cta: "View item",
+        currency: "FCFA",
+      },
       feedback: {
         title: "Does this suggestion suit you?",
         subtitle: "Rate it from 1 to 5: your feedback helps us advise you better.",

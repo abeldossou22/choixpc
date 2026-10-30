@@ -330,6 +330,12 @@ const fr = {
       tip: "Lancez SHODA dans les 24h après l'achat.",
       pdf: "Télécharger en PDF",
       restart: "Recommencer",
+      store: {
+        title: "Pour aller avec votre ordinateur",
+        subtitle: "Des équipements choisis pour vous, disponibles sur hevelstore.",
+        cta: "Voir l'article",
+        currency: "FCFA",
+      },
       feedback: {
         title: "Cette proposition vous convient-elle ?",
         subtitle: "Donnez-lui une note de 1 à 5 : votre avis nous aide à mieux vous conseiller.",

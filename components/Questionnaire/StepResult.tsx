@@ -4,6 +4,7 @@ import type { AIAnalysisResult, ProposalAnalysis } from "@/lib/types";
 import { useT } from "@/components/I18nProvider";
 import { track } from "@/lib/analytics";
 import FeedbackCard from "./FeedbackCard";
+import StoreItems from "./StoreItems";
 
 interface Props { result: AIAnalysisResult; onRestart: () => void; }
 
@@ -142,6 +143,8 @@ export default function StepResult({ result, onRestart }: Props) {
           {result.redFlags.map(f => <div key={f} className="text-sm flex gap-2 mb-1 text-red-300"><AlertCircle size={13} className="flex-shrink-0 mt-0.5" />{f}</div>)}
         </div>
       )}
+
+      {result.storeItems && result.storeItems.length > 0 && <StoreItems items={result.storeItems} />}
 
       {result.analysisId && <FeedbackCard analysisId={result.analysisId} />}
 

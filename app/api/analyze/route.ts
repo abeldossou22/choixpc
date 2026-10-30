@@ -6,6 +6,7 @@ import { isSupabaseConfigured } from "@/lib/supabase/config";
 import { getDictionary } from "@/lib/i18n";
 import { countryName, isCountry } from "@/lib/countries";
 import { PROFESSION_PROMPT, isProfession, isPreference, isBrand } from "@/lib/profile-options";
+import { getStoreAccessories } from "@/lib/hevelstore";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -41,6 +42,7 @@ export async function POST(req: NextRequest) {
         data.profession = prof === "autre" ? (other || undefined) : PROFESSION_PROMPT[prof];
       }
     }
+    data.catalog = await getStoreAccessories();
     const result = await analyzeComputer(data);
     let analysisId: string | undefined;
 

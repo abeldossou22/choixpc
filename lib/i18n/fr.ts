@@ -330,6 +330,15 @@ const fr = {
       tip: "Lancez SHODA dans les 24h après l'achat.",
       pdf: "Télécharger en PDF",
       restart: "Recommencer",
+      feedback: {
+        title: "Cette proposition vous convient-elle ?",
+        subtitle: "Donnez-lui une note de 1 à 5 : votre avis nous aide à mieux vous conseiller.",
+        commentLabel: "Un commentaire ? (facultatif)",
+        commentPh: "Ce qui vous a plu, ce qui manque, votre expérience sur ChoixPC…",
+        send: "Envoyer mon avis",
+        thanks: "Merci pour votre avis !",
+        error: "Votre avis n'a pas pu être envoyé. Veuillez réessayer.",
+      },
     },
   },
   account: {
@@ -384,6 +393,7 @@ const fr = {
     usagesRequired: "Veuillez préciser vos usages.",
     error: "Une erreur est survenue. Veuillez réessayer.",
     unavailable: "L'analyse est momentanément indisponible. Réessayez dans quelques minutes ou écrivez-nous sur WhatsApp.",
+    noDedicatedGpu: "Pas de carte graphique dédiée : cet ordinateur ne convient pas aux jeux.",
   },
 };
 

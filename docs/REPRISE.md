@@ -59,10 +59,8 @@ Puis `npm run dev` et ouvrir http://localhost:3000.
 
 ### Par Abel (dans ses comptes)
 
-- [ ] **⚠️ Inscriptions bloquées (erreur 500)** tant que Resend n'a pas de domaine vérifié : Resend refuse
-      d'écrire à une autre adresse que celle de son compte. Vérifier `hevelcare.com` dans Resend, puis
-      `EMAIL_FROM = ChoixPC <noreply@hevelcare.com>` dans Vercel et redéployer. Dépannage immédiat :
-      désactiver le « Send Email hook » (Supabase → Authentication → Hooks).
+- [ ] **Migration 0008** : exécuter `supabase/migrations/0008_feedbacks.sql` dans Supabase (avis après les résultats).
+- [ ] **GTM** : ajouter `feedback_submit` à l'expression du déclencheur (`docs/google-tag-manager.md`), puis publier.
 - [ ] **Supabase → Authentication → Emails** : recoller les modèles de `supabase/email-templates/` (nouveau numéro).
 - [ ] **Anciens inscrits** : les prévenir du partage avec hevelstore, puis les envoyer à hevelerp
       (`select private.send_to_hevelerp(id) from auth.users where email_confirmed_at is not null;`).

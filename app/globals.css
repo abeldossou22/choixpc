@@ -77,6 +77,9 @@
     font-family: var(--font-creato), system-ui, sans-serif;
   }
   ::selection { background: rgba(91,103,240,0.25); }
+  /* Liste déroulante native : sans ceci, le texte clair du mode sombre s'affiche sur le fond blanc du système. */
+  select option { background-color: var(--bg-card); color: var(--fg); }
+  select option:disabled { color: var(--fg-faint); }
 }
 
 @layer utilities {

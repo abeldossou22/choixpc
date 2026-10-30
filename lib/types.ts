@@ -24,6 +24,8 @@ export interface QuestionnaireData {
   brand?: string;
   /** Profil / métier de l'utilisateur (renseigné côté serveur depuis son profil). */
   profession?: string;
+  /** Seconde tentative : la première réponse proposait un ordinateur sans carte dédiée pour les jeux. */
+  gpuRetry?: boolean;
   /** Langue dans laquelle rédiger la recommandation. */
   locale?: "fr" | "en";
   /** Nom du pays de l'utilisateur (renseigné côté serveur depuis son profil). */
@@ -60,6 +62,8 @@ export interface GeneratedConfig {
 }
 
 export interface AIAnalysisResult {
+  /** Identifiant de l'analyse enregistrée, pour y rattacher l'avis de l'utilisateur. */
+  analysisId?: string;
   mode: "vendor" | "generated";
   summary: string;
   analyses?: ProposalAnalysis[];

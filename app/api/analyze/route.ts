@@ -42,6 +42,7 @@ export async function POST(req: NextRequest) {
       }
     }
     const result = await analyzeComputer(data);
+    let analysisId: string | undefined;
 
     if (supabase && user) {
       const row = {
@@ -55,14 +56,15 @@ export async function POST(req: NextRequest) {
         proposals: data.proposals,
         result,
       };
-      let { error } = await supabase.from("analyses").insert({ ...row, os: data.os ?? "both", preferences: data.preferences, brand: data.brand ?? null });
+      let { data: saved, error } = await supabase.from("analyses").insert({ ...row, os: data.os ?? "both", preferences: data.preferences, brand: data.brand ?? null }).select("id").single();
       // Colonnes absentes (migration 0005 pas encore exécutée) : on enregistre au moins l'essentiel.
-      if (error) ({ error } = await supabase.from("analyses").insert(row));
+      if (error) ({ data: saved, error } = await supabase.from("analyses").insert(row).select("id").single());
+      analysisId = saved?.id;
       // L'utilisateur reçoit son résultat même si l'enregistrement échoue.
       if (error) console.error("[ChoixPC API] Enregistrement de l'analyse :", error.message);
     }
 
-    return NextResponse.json(result);
+    return NextResponse.json({ ...result, analysisId });
   } catch (err) {
     if (err instanceof AnalysisConfigError) {
       console.error("[ChoixPC API] ⚠️ Configuration :", err.message);

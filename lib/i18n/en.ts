@@ -331,6 +331,15 @@ const en: Dictionary = {
       tip: "Run SHODA within 24 hours of buying.",
       pdf: "Download as PDF",
       restart: "Start again",
+      feedback: {
+        title: "Does this suggestion suit you?",
+        subtitle: "Rate it from 1 to 5: your feedback helps us advise you better.",
+        commentLabel: "Any comments? (optional)",
+        commentPh: "What you liked, what's missing, your experience on ChoixPC…",
+        send: "Send my feedback",
+        thanks: "Thank you for your feedback!",
+        error: "Your feedback could not be sent. Please try again.",
+      },
     },
   },
   account: {
@@ -385,6 +394,7 @@ const en: Dictionary = {
     usagesRequired: "Please tell us how you'll use the computer.",
     error: "Something went wrong. Please try again.",
     unavailable: "The analysis is temporarily unavailable. Try again in a few minutes or message us on WhatsApp.",
+    noDedicatedGpu: "No dedicated graphics card: this computer isn't suitable for gaming.",
   },
 };
 

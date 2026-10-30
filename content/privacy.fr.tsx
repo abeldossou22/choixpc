@@ -33,6 +33,7 @@ export const sections: LegalSection[] = [
         <li><strong>Vous envoyer des conseils et bons plans</strong> sur WhatsApp — uniquement si vous l'avez accepté (case facultative).</li>
         <li><strong>Prouver votre consentement</strong> et respecter nos obligations légales.</li>
         <li><strong>Améliorer le service</strong> à partir de statistiques agrégées, sans vous identifier.</li>
+        <li><strong>Recueillir votre avis</strong> sur nos recommandations : la note et le commentaire que vous choisissez de nous laisser sont liés à votre compte.</li>
       </ul>
       <p>Nous ne vendons jamais vos données.</p>
     </>,

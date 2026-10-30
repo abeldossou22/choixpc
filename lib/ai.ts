@@ -1,5 +1,14 @@
 import type { QuestionnaireData, AIAnalysisResult } from "./types";
 import { PREFERENCE_PROMPT, isPreference, isBrand } from "./profile-options";
+import { getDictionary } from "./i18n";
+
+/** Les jeux exigent une carte graphique dédiée : c'est une règle ferme, pas une simple préférence. */
+const needsDedicatedGpu = (data: QuestionnaireData) => data.usages.includes("jeux");
+
+const INTEGRATED_GPU = /int[ée]gr[ée]e?|integrated|\biris\b|\buhd\b|\bvega\b|\bapple\b|aucune|\bnone\b|sans carte|non d[ée]di|not dedicated|no dedicated/i;
+const DEDICATED_GPU = /nvidia|geforce|\b(rtx|gtx|mx\s?\d)|\brx\s?\d|\barc\s+a\d|d[ée]di[ée]e?|dedicated/i;
+/** Lit le champ "graphics" d'une proposition. */
+export const hasDedicatedGpu = (graphics?: string) => !!graphics && DEDICATED_GPU.test(graphics) && !INTEGRATED_GPU.test(graphics);
 
 function buildSystemPrompt(locale: "fr" | "en" = "fr"): string {
   const language = locale === "en"
@@ -32,12 +41,23 @@ function buildUserPrompt(data: QuestionnaireData): string {
     ? `PAYS DE L'UTILISATEUR : ${data.country}\nRecommande uniquement des modèles, processeurs et cartes graphiques réellement disponibles à l'achat dans ce pays aujourd'hui (boutiques locales, neuf ou occasion). Évite les générations très récentes qui n'y sont pas encore distribuées : préfère des références éprouvées et faciles à trouver sur place, et tiens compte des prix pratiqués localement.\n`
     : "";
 
-  const os = data.os ?? "both";
-  const osLine = os === "mac"
+  const gaming = needsDedicatedGpu(data);
+  const requestedOs = data.os ?? "both";
+  // Aucun Mac n'a de carte graphique dédiée : pour les jeux, on ne propose que Windows.
+  const os = gaming ? "windows" : requestedOs;
+  const osLine = gaming && requestedOs !== "windows"
+    ? "SYSTÈME SOUHAITÉ : Windows, car aucun Mac n'a de carte graphique dédiée. Ne propose aucun Mac et explique ce choix simplement dans \"summary\".\n"
+    : os === "mac"
     ? "SYSTÈME SOUHAITÉ : Mac (macOS) uniquement.\n"
     : os === "windows"
       ? "SYSTÈME SOUHAITÉ : Windows uniquement.\n"
       : "SYSTÈME SOUHAITÉ : l'utilisateur veut comparer Windows et Mac.\n";
+  const gamingLine = gaming
+    ? `RÈGLE ABSOLUE POUR LES JEUX : l'utilisateur joue. Ne propose JAMAIS un ordinateur sans carte graphique dédiée (NVIDIA GeForce ou AMD Radeon RX), même si le budget est serré. Une carte intégrée (Intel UHD, Iris Xe, Radeon intégrée, puce Apple) n'est pas acceptée. Le champ "graphics" doit citer le modèle exact suivi de ${data.locale === "en" ? '"(dedicated)"' : '"(dédiée)"'}.\n`
+    : "";
+  const retryLine = data.gpuRetry
+    ? "ATTENTION : ta réponse précédente proposait un ordinateur sans carte graphique dédiée, ce qui est refusé. Corrige-la.\n"
+    : "";
 
   const profession = data.profession
     ? `PROFIL DE L'UTILISATEUR : ${data.profession}\nTiens compte des logiciels et des habitudes de travail typiques de ce profil (par exemple AutoCAD/Revit/SketchUp pour un architecte, Excel et logiciels comptables avec pavé numérique pour un comptable, logiciels bancaires et sécurité pour un banquier), même s'ils ne sont pas cités dans les usages.\n`
@@ -47,11 +67,12 @@ function buildUserPrompt(data: QuestionnaireData): string {
     ? `PRÉFÉRENCES : ${[...prefs, isBrand(data.brand) ? `marque préférée ${data.brand}` : ""].filter(Boolean).join(" ; ")}\nRespecte ces préférences autant que le budget le permet. Si l'une d'elles est impossible à satisfaire ou en contradiction avec une autre, dis-le simplement et propose le meilleur compromis.\n`
     : "";
 
-  let prompt = `${country}${profession}${osLine}${prefsLine}USAGES : ${usagesList || "Non précisé"}\nDESCRIPTION : "${data.freeText || "Aucune"}"\nBUDGET : ${budget}\n`;
+  let prompt = `${country}${profession}${osLine}${gamingLine}${retryLine}${prefsLine}USAGES : ${usagesList || "Non précisé"}\nDESCRIPTION : "${data.freeText || "Aucune"}"\nBUDGET : ${budget}\n`;
 
   if (data.hasVendor && data.proposals.length > 0) {
     data.proposals.forEach(p => { prompt += `\n--- ${p.label} ---\n${p.rawText}\n`; });
-    prompt += `\nAnalyse chaque proposition. Tiens compte du système souhaité : si une offre n'est pas sous ce système, signale-le simplement dans son analyse. Réponds avec ce JSON :
+    prompt += `\nAnalyse chaque proposition. Tiens compte du système souhaité : si une offre n'est pas sous ce système, signale-le simplement dans son analyse.
+${gaming ? `Une offre sans carte graphique dédiée reçoit le verdict "deconseille", un score de 39 au maximum, et ne peut jamais être "bestProposalId". Si aucune offre n'a de carte dédiée, mets "bestProposalId": null et dis-le dans "summary", avec le type de carte à rechercher.\n` : ""}Réponds avec ce JSON :
 {"mode":"vendor","summary":"string","analyses":[{"proposalId":"string","label":"string","verdict":"recommande|acceptable|deconseille","verdictLabel":"string","score":0,"specs":{"processor":"","graphics":"","ram":"","storage":"","screen":"","price":"","condition":""},"pros":[""],"cons":[""],"explanation":"string"}],"bestProposalId":"string|null","generalAdvice":"string","redFlags":[]}`;
   } else {
     const wanted = os === "both" ? ["windows", "mac"] : [os];
@@ -60,7 +81,7 @@ function buildUserPrompt(data: QuestionnaireData): string {
 Pour une proposition Mac : "brand" est le modèle Apple précis (ex. "MacBook Air 13 M1"), "processor" la puce Apple (ex. "Apple M1"), "graphics" la partie graphique de la puce (ex. "GPU 7 cœurs (intégré à la puce M1)"). Propose un modèle neuf ou d'occasion/reconditionné selon ce que le budget permet.
 Si le budget ne permet pas un Mac convenable, même d'occasion, mets "withinBudget": false, propose quand même le Mac le plus accessible avec son prix réel dans "estimatedPrice", et explique simplement dans "explanation" le budget à prévoir. Ne force jamais une option irréaliste.
 Si un usage est mal adapté à un système (par exemple beaucoup de jeux vidéo sur Mac, ou un logiciel qui n'existe que sur un système), dis-le clairement dans "explanation".
-Dans "summary", dis en une ou deux phrases laquelle des propositions convient le mieux à cet utilisateur et pourquoi.
+${gaming ? `Si le budget ne permet pas un ordinateur avec carte dédiée, même d'occasion, mets "withinBudget": false, propose quand même le moins cher qui en a une, avec son prix réel dans "estimatedPrice", et explique le budget à prévoir.\n` : ""}Dans "summary", dis en une ou deux phrases laquelle des propositions convient le mieux à cet utilisateur et pourquoi.
 Réponds avec ce JSON :
 {"mode":"generated","summary":"string","generatedConfigs":[${item}],"generalAdvice":"string","redFlags":[]}`;
   }
@@ -145,6 +166,9 @@ async function analyzeWithOpenAI(data: QuestionnaireData): Promise<AIAnalysisRes
 /** Erreur de configuration (clé absente ou refusée) : à corriger dans .env.local, pas par l'utilisateur. */
 export class AnalysisConfigError extends Error {}
 
+// Au-delà, une seconde analyse dépasserait la durée maximale d'une requête sur Vercel (60 s).
+const GPU_RETRY_LIMIT_MS = 25_000;
+
 const KEY_ENV = { gemini: "GEMINI_API_KEY", anthropic: "ANTHROPIC_API_KEY", openai: "OPENAI_API_KEY" } as const;
 
 export async function analyzeComputer(data: QuestionnaireData): Promise<AIAnalysisResult> {
@@ -153,8 +177,16 @@ export async function analyzeComputer(data: QuestionnaireData): Promise<AIAnalys
   if (!process.env[KEY_ENV[provider]]) {
     throw new AnalysisConfigError(`${KEY_ENV[provider]} est vide dans .env.local (AI_PROVIDER=${provider}).`);
   }
+  const started = Date.now();
   try {
-    return normalize(await run(provider, data));
+    let result = normalize(await run(provider, data), data);
+    // Jeux : toutes les propositions ont été écartées faute de carte dédiée. On redemande une fois si le temps le permet.
+    if (result.mode === "generated" && !result.generatedConfigs?.length && needsDedicatedGpu(data)) {
+      if (Date.now() - started > GPU_RETRY_LIMIT_MS) throw new AnalysisBusyError("Aucune proposition avec carte dédiée.");
+      result = normalize(await run(provider, { ...data, gpuRetry: true }), data);
+      if (!result.generatedConfigs?.length) throw new AnalysisBusyError("Aucune proposition avec carte dédiée après la seconde tentative.");
+    }
+    return result;
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
     if (/api key|api_key|authentication|unauthorized|401|403|permission/i.test(msg)) {
@@ -164,13 +196,25 @@ export async function analyzeComputer(data: QuestionnaireData): Promise<AIAnalys
   }
 }
 
+/** Pour les jeux, déclasse côté serveur toute offre sans carte dédiée, même si le modèle ignore la règle. */
+function enforceVendorGpu(result: AIAnalysisResult, data: QuestionnaireData): AIAnalysisResult {
+  const note = getDictionary(data.locale ?? "fr").api.noDedicatedGpu;
+  const analyses = (result.analyses ?? []).map(a => hasDedicatedGpu(a.specs?.graphics) ? a : {
+    ...a, verdict: "deconseille" as const, score: Math.min(a.score, 39), cons: [...(a.cons ?? []), note],
+  });
+  const best = analyses.find(a => a.proposalId === result.bestProposalId);
+  return { ...result, analyses, bestProposalId: best?.verdict === "deconseille" ? undefined : result.bestProposalId };
+}
+
 /** Garantit generatedConfigs (tableau) et generatedConfig (première proposition, pour l'historique). */
-function normalize(result: AIAnalysisResult): AIAnalysisResult {
-  if (result.mode !== "generated") return result;
+function normalize(result: AIAnalysisResult, data: QuestionnaireData): AIAnalysisResult {
+  if (result.mode !== "generated") return needsDedicatedGpu(data) ? enforceVendorGpu(result, data) : result;
   const list = Array.isArray(result.generatedConfigs) && result.generatedConfigs.length
     ? result.generatedConfigs
     : result.generatedConfig ? [result.generatedConfig] : [];
-  const configs = list.map(c => ({ ...c, priorities: c.priorities ?? [], whatToAskVendor: c.whatToAskVendor ?? [] }));
+  const configs = list
+    .filter(c => !needsDedicatedGpu(data) || hasDedicatedGpu(c.graphics))
+    .map(c => ({ ...c, priorities: c.priorities ?? [], whatToAskVendor: c.whatToAskVendor ?? [] }));
   return { ...result, generatedConfigs: configs, generatedConfig: configs[0] };
 }
 

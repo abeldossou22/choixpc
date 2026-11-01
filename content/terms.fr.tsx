@@ -69,7 +69,7 @@ export const sections: LegalSection[] = [
   },
   {
     id: "shoda", title: "Outil SHODA",
-    body: <p>ChoixPC propose un lien vers SHODA, un outil gratuit de vérification des caractéristiques d'un ordinateur. SHODA est un service distinct : son utilisation est régie par ses propres conditions.</p>,
+    body: <p>ChoixPC propose un lien vers SHODA, un outil de vérification des caractéristiques d'un ordinateur, disponible en démo gratuite et en version payante. SHODA est un service distinct : son utilisation est régie par ses propres conditions.</p>,
   },
   {
     id: "gratuite", title: "Gratuité",

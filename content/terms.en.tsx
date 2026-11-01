@@ -70,7 +70,7 @@ export const sections: LegalSection[] = [
   },
   {
     id: "shoda", title: "SHODA tool",
-    body: <p>ChoixPC links to SHODA, a free tool for checking a computer's specifications. SHODA is a separate service: its use is governed by its own terms.</p>,
+    body: <p>ChoixPC links to SHODA, a tool for checking a computer's specifications, available as a free demo and a paid version. SHODA is a separate service: its use is governed by its own terms.</p>,
   },
   {
     id: "free", title: "Free of charge",

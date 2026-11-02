@@ -161,7 +161,7 @@ export default function StepResult({ result, onRestart }: Props) {
           <p className="text-sm leading-relaxed mb-5" style={{ color: "var(--fg-mute)" }}>
             {t.shoda1} <strong style={{ color: "var(--fg-soft)" }}>SHODA</strong> {t.shoda2}
           </p>
-          <a href="https://shoda-eight.vercel.app/" target="_blank" rel="noopener noreferrer"
+          <a href="https://shoda.hevelcare.com/" target="_blank" rel="noopener noreferrer"
             className="inline-flex items-center gap-2 px-6 py-3 text-white font-bold text-sm rounded-full transition-all hover:-translate-y-0.5"
             style={{ background: "var(--blue)", boxShadow: "0 8px 24px -8px rgba(91,103,240,0.6)" }}>
             {t.shodaCta}

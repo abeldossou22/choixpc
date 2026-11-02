@@ -46,7 +46,7 @@ export default function HomePage() {
                   </span>
                 ))}
               </div>
-              <a href="https://shoda-eight.vercel.app/" target="_blank" rel="noopener noreferrer"
+              <a href="https://shoda.hevelcare.com/" target="_blank" rel="noopener noreferrer"
                 className="group inline-flex items-center gap-3 pl-2 pr-6 py-2 text-sm font-semibold rounded-full btn-primary">
                 <span className="w-8 h-8 rounded-full flex items-center justify-center dot-green">
                   <ArrowUpRight size={15} strokeWidth={2.5} />

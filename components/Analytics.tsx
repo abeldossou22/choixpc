@@ -3,9 +3,9 @@ import { useEffect, useState } from "react";
 import Script from "next/script";
 import { usePathname } from "next/navigation";
 import { Link, useLocale, useT } from "./I18nProvider";
-import { GTM_ID, getConsent, setConsent, track } from "@/lib/analytics";
+import { GTM_ID, MEASUREMENT_ON, getConsent, loadMetaPixel, setConsent, track } from "@/lib/analytics";
 
-/** Charge Google Tag Manager, suit les clics utiles et affiche le bandeau de consentement. */
+/** Charge Google Tag Manager et le pixel Meta (après accord), suit les clics utiles et affiche le bandeau de consentement. */
 export default function Analytics() {
   const locale = useLocale();
   const pathname = usePathname();
@@ -14,7 +14,7 @@ export default function Analytics() {
 
   // Bandeau : affiché tant qu'aucun choix n'a été fait, et rouvert depuis le lien « Cookies » du pied de page.
   useEffect(() => {
-    if (!GTM_ID) return;
+    if (!MEASUREMENT_ON) return;
     if (getConsent() === null) setOpen(true);
     const reopen = () => setOpen(true);
     window.addEventListener("choixpc:open-cookies", reopen);
@@ -24,11 +24,13 @@ export default function Analytics() {
   // Contexte de page (langue) à chaque navigation, sans donnée personnelle.
   useEffect(() => {
     if (GTM_ID) track("page_context", { locale, page_path: pathname });
+    // Pixel Meta : une page vue à chaque navigation, seulement si l'utilisateur a accepté.
+    if (getConsent() === "granted") { loadMetaPixel(); window.fbq?.("track", "PageView"); }
   }, [locale, pathname]);
 
   // Clics sur WhatsApp, SHODA et les boutons d'inscription, où qu'ils soient dans le site.
   useEffect(() => {
-    if (!GTM_ID) return;
+    if (!MEASUREMENT_ON) return;
     const onClick = (e: MouseEvent) => {
       const a = (e.target as HTMLElement | null)?.closest("a");
       if (!a) return;
@@ -42,17 +44,20 @@ export default function Analytics() {
     return () => document.removeEventListener("click", onClick);
   }, []);
 
-  if (!GTM_ID) return null;
+  if (!MEASUREMENT_ON) return null;
 
-  const choose = (value: "granted" | "denied") => { setConsent(value); setOpen(false); };
+  const choose = (value: "granted" | "denied") => {
+    setConsent(value); setOpen(false);
+    if (value === "granted") window.fbq?.("track", "PageView");
+  };
 
   return (
     <>
-      <Script id="gtm" strategy="afterInteractive" dangerouslySetInnerHTML={{ __html:
-        `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','${GTM_ID}');` }} />
-      <noscript>
+      {GTM_ID && <Script id="gtm" strategy="afterInteractive" dangerouslySetInnerHTML={{ __html:
+        `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','${GTM_ID}');` }} />}
+      {GTM_ID && <noscript>
         <iframe src={`https://www.googletagmanager.com/ns.html?id=${GTM_ID}`} height="0" width="0" style={{ display: "none", visibility: "hidden" }} title="gtm" />
-      </noscript>
+      </noscript>}
 
       {open && (
         <div role="dialog" aria-live="polite" aria-label={t.title}

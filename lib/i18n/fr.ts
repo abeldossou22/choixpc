@@ -151,8 +151,8 @@ const fr = {
   },
   footer: { project: "Un projet de", tagline: "Conseil informatique pour tous", terms: "CGU", privacy: "Confidentialité", cookies: "Cookies" },
   cookies: {
-    title: "Mesure d'audience",
-    text: "Avec votre accord, nous utilisons des cookies pour comprendre comment le site est utilisé et l'améliorer. Aucune publicité.",
+    title: "Cookies de mesure",
+    text: "Avec votre accord, nous utilisons des cookies pour comprendre comment le site est utilisé, l'améliorer et mesurer l'efficacité de nos publicités sur Facebook.",
     more: "En savoir plus",
     accept: "Accepter",
     refuse: "Refuser",

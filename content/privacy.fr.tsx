@@ -49,6 +49,7 @@ export const sections: LegalSection[] = [
         <li><strong>Notre hébergeur web</strong>, pour la mise à disposition du site.</li>
         <li><strong>Resend</strong>, notre service d'envoi d'emails, qui reçoit votre adresse email pour vous envoyer les messages liés à votre compte.</li>
         <li><strong>Google</strong> (Google Analytics et Google Tag Manager), pour la mesure d'audience, uniquement si vous l'avez acceptée.</li>
+        <li><strong>Meta</strong> (pixel Facebook), pour mesurer l'efficacité de nos publicités sur Facebook et Instagram, uniquement si vous l'avez accepté. Il apprend les pages consultées et quelques étapes (inscription, analyse terminée, clic vers WhatsApp), jamais votre nom, votre email, votre numéro ni le contenu de votre questionnaire.</li>
       </ul>
       <p>Ces prestataires agissent selon nos instructions et ne peuvent pas utiliser vos données pour leur propre compte.</p>
     </>,
@@ -86,7 +87,7 @@ export const sections: LegalSection[] = [
   },
   {
     id: "cookies", title: "Cookies",
-    body: <p>ChoixPC utilise des cookies strictement nécessaires : ceux qui maintiennent votre connexion et celui qui mémorise votre langue. Avec votre accord uniquement, nous utilisons aussi des cookies de mesure d'audience (Google Analytics, via Google Tag Manager) pour savoir quelles pages sont consultées et où le parcours peut être amélioré. Ces statistiques ne contiennent ni votre nom, ni votre email, ni votre numéro. Vous pouvez accepter, refuser ou changer d'avis à tout moment grâce au lien « Cookies » en bas de chaque page. Aucun cookie publicitaire n'est déposé. Votre préférence de thème est enregistrée dans le stockage local de votre navigateur.</p>,
+    body: <p>ChoixPC utilise des cookies strictement nécessaires : ceux qui maintiennent votre connexion et celui qui mémorise votre langue. Avec votre accord uniquement, nous utilisons aussi des cookies de mesure d'audience (Google Analytics, via Google Tag Manager) pour savoir quelles pages sont consultées et où le parcours peut être amélioré. Avec ce même accord, le pixel Meta (Facebook) dépose un cookie qui nous permet de savoir si une visite vient de nos publicités sur Facebook ou Instagram et si elle a abouti à une inscription ou à une analyse. Ces mesures ne contiennent ni votre nom, ni votre email, ni votre numéro. Vous pouvez accepter, refuser ou changer d'avis à tout moment grâce au lien « Cookies » en bas de chaque page. Sans votre accord, aucun de ces cookies n'est déposé. Votre préférence de thème est enregistrée dans le stockage local de votre navigateur.</p>,
   },
   {
     id: "modification", title: "Modification de cette politique",

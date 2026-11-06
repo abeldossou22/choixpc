@@ -50,6 +50,7 @@ export const sections: LegalSection[] = [
         <li><strong>Our web host</strong>, to make the site available.</li>
         <li><strong>Resend</strong>, our email delivery service, which receives your email address to send you messages about your account.</li>
         <li><strong>Google</strong> (Google Analytics and Google Tag Manager), for audience measurement, only if you accepted it.</li>
+        <li><strong>Meta</strong> (Facebook pixel), to measure how well our ads on Facebook and Instagram work, only if you accepted it. It learns which pages are viewed and a few steps (sign-up, analysis completed, click to WhatsApp), never your name, email, phone number or the content of your questionnaire.</li>
       </ul>
       <p>These providers act on our instructions and may not use your data for their own purposes.</p>
     </>,
@@ -87,7 +88,7 @@ export const sections: LegalSection[] = [
   },
   {
     id: "cookies", title: "Cookies",
-    body: <p>ChoixPC uses strictly necessary cookies: those that keep you signed in and the one that remembers your language. Only with your consent, we also use audience measurement cookies (Google Analytics, via Google Tag Manager) to see which pages are viewed and where the journey can be improved. These statistics contain neither your name, nor your email, nor your phone number. You can accept, decline or change your mind at any time using the "Cookies" link at the bottom of every page. No advertising cookie is set. Your theme preference is saved in your browser's local storage.</p>,
+    body: <p>ChoixPC uses strictly necessary cookies: those that keep you signed in and the one that remembers your language. Only with your consent, we also use audience measurement cookies (Google Analytics, via Google Tag Manager) to see which pages are viewed and where the journey can be improved. With the same consent, the Meta (Facebook) pixel sets a cookie that lets us know whether a visit comes from our ads on Facebook or Instagram and whether it led to a sign-up or an analysis. These measurements contain neither your name, nor your email, nor your phone number. You can accept, decline or change your mind at any time using the "Cookies" link at the bottom of every page. Without your consent, none of these cookies is set. Your theme preference is saved in your browser's local storage.</p>,
   },
   {
     id: "changes", title: "Changes to this policy",

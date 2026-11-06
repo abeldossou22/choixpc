@@ -152,8 +152,8 @@ const en: Dictionary = {
   },
   footer: { project: "A project by", tagline: "Computer advice for everyone", terms: "Terms", privacy: "Privacy", cookies: "Cookies" },
   cookies: {
-    title: "Audience measurement",
-    text: "With your consent, we use cookies to understand how the site is used and improve it. No advertising.",
+    title: "Measurement cookies",
+    text: "With your consent, we use cookies to understand how the site is used, improve it and measure how well our Facebook ads work.",
     more: "Learn more",
     accept: "Accept",
     refuse: "Decline",

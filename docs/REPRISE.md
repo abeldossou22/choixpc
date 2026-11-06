@@ -45,6 +45,7 @@ Puis `npm run dev` et ouvrir http://localhost:3000.
 - SEO (métadonnées par langue, sitemap, robots, données structurées, image de partage), favicon.
 - CGU et politique de confidentialité en français et en anglais.
 - Google Tag Manager avec bandeau de consentement ; 16 événements envoyés.
+- Pixel Meta `2001795997165336` (chargé seulement après « Accepter ») : PageView, CompleteRegistration (inscription), Lead (analyse réussie), Contact (clic WhatsApp).
 - Envoi des emails de compte avec Resend (code prêt).
 - En ligne sur Vercel : https://choixpc.vercel.app
 - **Liaison avec hevelerp** (22-24 octobre) : à la confirmation de son email, chaque inscrit part vers
